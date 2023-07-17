@@ -7,11 +7,19 @@ export const routes = Router();
 //GET ALL POST
 routes.get("/", async (req, res) => {
     const posts = await Prisma.post.findMany();
-    return res.send(posts);
+    return res.json(posts);
 });
 
 //GET ONE POST
+routes.get("/:id", async (req, res) => {
+    const { id } = req.params;
+    const postExisted = await Prisma.post.findFirst({ where: { id: id } });
 
+    if (!postExisted) {
+        return res.sendStatus(400);
+    }
+    return res.json(postExisted);
+});
 
 //CREATE POST
 routes.post("/", async (req, res) => {
@@ -56,9 +64,9 @@ routes.put("/:id", async (req, res) => {
         return res.json("campo com valor invalido")
     }
 
-    await Prisma.post.update({ 
-        data: { content, title }, 
-        where: { id: id } 
+    await Prisma.post.update({
+        data: { content, title },
+        where: { id: id }
     });
 
     return res.sendStatus(200)
