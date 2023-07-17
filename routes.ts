@@ -37,8 +37,29 @@ routes.delete("/:id", async (req, res) => {
     if (!postExisted) {
         return res.sendStatus(400);
     }
-    
+
     await Prisma.post.delete({ where: { id: id } });
     return res.sendStatus(200);
-})
+});
+
 //UPDATE POST
+routes.put("/:id", async (req, res) => {
+    const { id } = req.params;
+    const { title, content } = req.body;
+    const postExisted = await Prisma.post.findFirst({ where: { id: id } });
+
+    if (!postExisted) {
+        return res.sendStatus(400);
+    }
+
+    if (!content || !title) {
+        return res.json("campo com valor invalido")
+    }
+
+    await Prisma.post.update({ 
+        data: { content, title }, 
+        where: { id: id } 
+    });
+
+    return res.sendStatus(200)
+})
